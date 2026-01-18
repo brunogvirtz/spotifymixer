@@ -75,74 +75,60 @@ function renderPlaylists() {
 
   for (const p of items) {
     const row = document.createElement("div");
-    row.className = "plItem";
-    row.tabIndex = 0;
+    row.className = "plItemCompact";
 
-    const chk = document.createElement("input");
-    chk.type = "checkbox";
-    chk.className = "chk";
-    chk.checked = selectedIds.has(p.id);
+    const cover = document.createElement("div");
+    cover.className = "plCover";
+    if (p.image) {
+      const img = document.createElement("img");
+      img.src = p.image;
+      img.alt = p.name || "Playlist";
+      cover.appendChild(img);
+    } else {
+      cover.classList.add("plCoverFallback");
+      cover.textContent = "♪";
+    }
 
     const meta = document.createElement("div");
-    meta.className = "plMeta";
+    meta.className = "plMetaCompact";
 
-    const name = document.createElement("p");
-    name.className = "plName";
+    const name = document.createElement("div");
+    name.className = "plNameCompact";
     name.textContent = p.name || "(sin nombre)";
 
     const sub = document.createElement("div");
-    sub.className = "plSub";
-
-    const tagTracks = document.createElement("span");
-    tagTracks.className = "tag";
-    tagTracks.textContent = `${p.tracks?.total ?? 0} tracks`;
-
-    const tagOwner = document.createElement("span");
-    tagOwner.className = "tag";
-    tagOwner.textContent = p.owner?.display_name ? `by ${p.owner.display_name}` : "playlist";
-
-    sub.appendChild(tagTracks);
-    sub.appendChild(tagOwner);
+    sub.className = "plSubCompact";
+    sub.textContent = `${p.tracksTotal} canciones`;
 
     meta.appendChild(name);
     meta.appendChild(sub);
 
-    // Click en todo el item toggles
-    const toggle = () => {
+    const btn = document.createElement("button");
+    btn.className = "btn btnSmall";
+    const isOn = selectedIds.has(p.id);
+    btn.textContent = isOn ? "Agregada" : "Agregar";
+    if (isOn) btn.classList.add("btnOn");
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
       if (selectedIds.has(p.id)) selectedIds.delete(p.id);
       else selectedIds.add(p.id);
-      chk.checked = selectedIds.has(p.id);
-      updateCounts();
-    };
-
-    row.addEventListener("click", (e) => {
-      // Si clickeó directamente el checkbox, dejalo
-      if (e.target === chk) {
-        if (chk.checked) selectedIds.add(p.id);
-        else selectedIds.delete(p.id);
-        updateCounts();
-        return;
-      }
-      toggle();
+      renderPlaylists();
     });
 
-    row.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        toggle();
-      }
+    row.addEventListener("click", () => {
+      if (selectedIds.has(p.id)) selectedIds.delete(p.id);
+      else selectedIds.add(p.id);
+      renderPlaylists();
     });
 
-    chk.addEventListener("change", () => {
-      if (chk.checked) selectedIds.add(p.id);
-      else selectedIds.delete(p.id);
-      updateCounts();
-    });
-
-    row.appendChild(chk);
+    row.appendChild(cover);
     row.appendChild(meta);
+    row.appendChild(btn);
+
     els.playlistList.appendChild(row);
   }
+
 
   updateCounts();
 }
@@ -184,9 +170,11 @@ async function loadPlaylists() {
     playlistsCache = (data.items || []).map(p => ({
       id: p.id,
       name: p.name,
-      tracks: p.tracks,
-      owner: p.owner,
+      tracksTotal: p.tracks?.total ?? 0,
+      image: p.images?.[0]?.url || "",
+      owner: p.owner?.display_name || "",
     }));
+
 
     // Limpio selección si algo ya no existe
     const valid = new Set(playlistsCache.map(p => p.id));
