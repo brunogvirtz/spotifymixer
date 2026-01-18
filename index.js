@@ -74,6 +74,11 @@ async function spotify(req,url){
   return r.json();
 }
 
+
+app.get("/api/me", requireAuth, async (req,res)=>{
+  res.json(await spotify(req,"https://api.spotify.com/v1/me"));
+});
+
 app.get("/api/playlists", requireAuth, async (req,res)=>{
   res.json(await spotify(req,"https://api.spotify.com/v1/me/playlists?limit=50"));
 });
