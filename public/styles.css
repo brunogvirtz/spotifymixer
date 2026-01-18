@@ -512,4 +512,87 @@ a.link:hover{ border-bottom-color: rgba(29,185,84,.65); }
   padding: 10px 12px;
   border-radius: 14px;
   font-size: 14px;
+  font-style: none;
+}
+
+/* --- Opciones de mix (modo / curva / flags) --- */
+
+.optionsBlock{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.optionsRow{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Pills con inputs adentro */
+.pill input{
+  margin-right: 6px;
+  accent-color: var(--good);
+}
+
+/* Más aire entre grupos */
+.optionsSpacer{
+  height: 8px;
+}
+
+/* Select estilizado */
+.selectWrap{
+  position: relative;
+  width: 100%;
+}
+
+.selectWrap select{
+  appearance: none;
+  width: 100%;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.selectWrap:after{
+  content: "▾";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: rgba(255,255,255,.7);
+  font-size: 14px;
+}
+
+/* Hover y focus coherentes */
+.selectWrap select:hover{
+  background: rgba(255,255,255,.08);
+}
+.selectWrap select:focus{
+  border-color: rgba(29,185,84,.45);
+  box-shadow: 0 0 0 4px rgba(29,185,84,.12);
+}
+
+/* Radio pills un poco más lindas */
+.pill input[type="radio"]{
+  margin-top: 0;
+}
+
+.pill{
+  cursor: pointer;
+  transition: background .12s ease, border-color .12s ease, transform .12s ease;
+}
+
+.pill:hover{
+  background: rgba(255,255,255,.07);
+  border-color: rgba(255,255,255,.18);
+  transform: translateY(-1px);
+}
+
+/* Separación visual del bloque de opciones */
+.optionsCard{
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px dashed rgba(255,255,255,.12);
+  background: rgba(255,255,255,.03);
 }
