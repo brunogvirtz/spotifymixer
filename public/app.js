@@ -1,31 +1,278 @@
+const els = {
+  btnLogin: document.getElementById("btnLogin"),
+  btnLogout: document.getElementById("btnLogout"),
+  btnLoad: document.getElementById("btnLoad"),
+  btnAll: document.getElementById("btnAll"),
+  btnNone: document.getElementById("btnNone"),
+  btnMix: document.getElementById("btnMix"),
 
-async function logout(){
-  await fetch("/logout",{method:"POST"});
+  loginCard: document.getElementById("loginCard"),
+  appGrid: document.getElementById("appGrid"),
+
+  userPill: document.getElementById("userPill"),
+  userName: document.getElementById("userName"),
+
+  search: document.getElementById("search"),
+  plName: document.getElementById("plName"),
+
+  playlistList: document.getElementById("playlistList"),
+  selCount: document.getElementById("selCount"),
+  plCount: document.getElementById("plCount"),
+  out: document.getElementById("out"),
+
+  toast: document.getElementById("toast"),
+};
+
+let playlistsCache = [];
+let selectedIds = new Set();
+
+function toast(msg, detail = "") {
+  els.toast.innerHTML = `${msg}${detail ? `<small>${detail}</small>` : ""}`;
+  els.toast.classList.add("show");
+  clearTimeout(window.__toastT);
+  window.__toastT = setTimeout(() => els.toast.classList.remove("show"), 2800);
 }
 
-async function loadPlaylists(){
-  const r = await fetch("/api/playlists");
-  if(r.status===401){ alert("Login primero"); return; }
-  const j = await r.json();
-  const d = document.getElementById("pls");
-  d.innerHTML="";
-  j.items.forEach(p=>{
-    const c = document.createElement("input");
-    c.type="checkbox"; c.value=p.id;
-    d.appendChild(c);
-    d.appendChild(document.createTextNode(" "+p.name+" ("+p.tracks.total+")"));
-    d.appendChild(document.createElement("br"));
-  });
+async function api(url, opts) {
+  const r = await fetch(url, opts);
+  const contentType = r.headers.get("content-type") || "";
+  let data = null;
+  if (contentType.includes("application/json")) data = await r.json();
+  else data = await r.text();
+
+  if (!r.ok) {
+    const errMsg = (data && data.error) ? data.error : (typeof data === "string" ? data : "request_failed");
+    throw new Error(errMsg);
+  }
+  return data;
 }
 
-async function mix(){
-  const ids=[...document.querySelectorAll("input[type=checkbox]:checked")].map(i=>i.value);
-  const name=document.getElementById("name").value;
-  const r = await fetch("/api/mix",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({playlistIds:ids,newPlaylistName:name})
-  });
-  const j = await r.json();
-  document.getElementById("out").textContent=JSON.stringify(j,null,2);
+function updateCounts() {
+  els.selCount.textContent = String(selectedIds.size);
+  els.btnMix.disabled = selectedIds.size < 1;
 }
+
+function matchesSearch(p, q) {
+  if (!q) return true;
+  return (p.name || "").toLowerCase().includes(q);
+}
+
+function renderPlaylists() {
+  const q = (els.search.value || "").trim().toLowerCase();
+  const items = playlistsCache.filter(p => matchesSearch(p, q));
+
+  els.plCount.textContent = String(items.length);
+  els.playlistList.innerHTML = "";
+
+  if (!items.length) {
+    const div = document.createElement("div");
+    div.style.color = "rgba(255,255,255,.65)";
+    div.style.fontSize = "13px";
+    div.textContent = "No hay playlists para mostrar con ese filtro.";
+    els.playlistList.appendChild(div);
+    return;
+  }
+
+  for (const p of items) {
+    const row = document.createElement("div");
+    row.className = "plItem";
+    row.tabIndex = 0;
+
+    const chk = document.createElement("input");
+    chk.type = "checkbox";
+    chk.className = "chk";
+    chk.checked = selectedIds.has(p.id);
+
+    const meta = document.createElement("div");
+    meta.className = "plMeta";
+
+    const name = document.createElement("p");
+    name.className = "plName";
+    name.textContent = p.name || "(sin nombre)";
+
+    const sub = document.createElement("div");
+    sub.className = "plSub";
+
+    const tagTracks = document.createElement("span");
+    tagTracks.className = "tag";
+    tagTracks.textContent = `${p.tracks?.total ?? 0} tracks`;
+
+    const tagOwner = document.createElement("span");
+    tagOwner.className = "tag";
+    tagOwner.textContent = p.owner?.display_name ? `by ${p.owner.display_name}` : "playlist";
+
+    sub.appendChild(tagTracks);
+    sub.appendChild(tagOwner);
+
+    meta.appendChild(name);
+    meta.appendChild(sub);
+
+    // Click en todo el item toggles
+    const toggle = () => {
+      if (selectedIds.has(p.id)) selectedIds.delete(p.id);
+      else selectedIds.add(p.id);
+      chk.checked = selectedIds.has(p.id);
+      updateCounts();
+    };
+
+    row.addEventListener("click", (e) => {
+      // Si clickeó directamente el checkbox, dejalo
+      if (e.target === chk) {
+        if (chk.checked) selectedIds.add(p.id);
+        else selectedIds.delete(p.id);
+        updateCounts();
+        return;
+      }
+      toggle();
+    });
+
+    row.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggle();
+      }
+    });
+
+    chk.addEventListener("change", () => {
+      if (chk.checked) selectedIds.add(p.id);
+      else selectedIds.delete(p.id);
+      updateCounts();
+    });
+
+    row.appendChild(chk);
+    row.appendChild(meta);
+    els.playlistList.appendChild(row);
+  }
+
+  updateCounts();
+}
+
+async function checkAuth() {
+  try {
+    const me = await api("/api/me");
+    // Auth OK
+    els.userName.textContent = me.display_name || me.id || "Spotify";
+    els.userPill.classList.remove("hidden");
+
+    els.btnLogin.classList.add("hidden");
+    els.btnLogout.classList.remove("hidden");
+
+    els.loginCard.classList.add("hidden");
+    els.appGrid.classList.remove("hidden");
+
+    toast("Conectado ✅", `Hola ${me.display_name || me.id}`);
+    return true;
+  } catch {
+    // Not logged
+    els.userPill.classList.add("hidden");
+
+    els.btnLogin.classList.remove("hidden");
+    els.btnLogout.classList.add("hidden");
+
+    els.loginCard.classList.remove("hidden");
+    els.appGrid.classList.add("hidden");
+    return false;
+  }
+}
+
+async function loadPlaylists() {
+  try {
+    els.btnLoad.disabled = true;
+    els.btnLoad.textContent = "Cargando…";
+    const data = await api("/api/playlists");
+
+    playlistsCache = (data.items || []).map(p => ({
+      id: p.id,
+      name: p.name,
+      tracks: p.tracks,
+      owner: p.owner,
+    }));
+
+    // Limpio selección si algo ya no existe
+    const valid = new Set(playlistsCache.map(p => p.id));
+    selectedIds = new Set([...selectedIds].filter(id => valid.has(id)));
+
+    renderPlaylists();
+    toast("Playlists cargadas", `${playlistsCache.length} encontradas`);
+  } catch (e) {
+    toast("Error cargando playlists", String(e.message || e));
+  } finally {
+    els.btnLoad.disabled = false;
+    els.btnLoad.textContent = "Cargar";
+  }
+}
+
+async function mix() {
+  try {
+    const ids = [...selectedIds];
+    if (!ids.length) return;
+
+    const name = (els.plName.value || "").trim() || "Roadtrip mix ✨";
+
+    els.btnMix.disabled = true;
+    els.btnMix.textContent = "Creando…";
+    els.out.textContent = "{\n  \"status\": \"Creando playlist...\"\n}";
+
+    const res = await api("/api/mix", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        playlistIds: ids,
+        newPlaylistName: name,
+      }),
+    });
+
+    els.out.textContent = JSON.stringify(res, null, 2);
+
+    if (res.url) {
+      toast("Listo 🎉", "Playlist creada. Abrila desde la salida.");
+    } else {
+      toast("Listo", "Playlist creada.");
+    }
+  } catch (e) {
+    els.out.textContent = JSON.stringify({ error: String(e.message || e) }, null, 2);
+    toast("Error creando playlist", String(e.message || e));
+  } finally {
+    els.btnMix.disabled = selectedIds.size < 1;
+    els.btnMix.textContent = "Crear mezclada";
+  }
+}
+
+// Wire up
+els.btnLogin.addEventListener("click", () => location.href = "/login");
+els.btnLogout.addEventListener("click", async () => {
+  try {
+    await api("/logout", { method: "POST" });
+    selectedIds.clear();
+    playlistsCache = [];
+    els.playlistList.innerHTML = "";
+    els.out.textContent = "{}";
+    toast("Sesión cerrada", "Volvé a conectar cuando quieras.");
+  } catch {}
+  await checkAuth();
+});
+
+els.btnLoad.addEventListener("click", loadPlaylists);
+els.btnAll.addEventListener("click", () => {
+  const q = (els.search.value || "").trim().toLowerCase();
+  // Selecciona solo los visibles con filtro
+  for (const p of playlistsCache) {
+    if (matchesSearch(p, q)) selectedIds.add(p.id);
+  }
+  renderPlaylists();
+});
+els.btnNone.addEventListener("click", () => {
+  selectedIds.clear();
+  renderPlaylists();
+});
+els.search.addEventListener("input", renderPlaylists);
+els.btnMix.addEventListener("click", mix);
+
+// Boot
+(async function init(){
+  const ok = await checkAuth();
+  if (ok) {
+    // auto-cargar para que se vea vivo
+    await loadPlaylists();
+  }
+})();
