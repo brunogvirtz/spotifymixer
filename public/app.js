@@ -24,6 +24,12 @@ const els = {
 
   result: document.getElementById("result"),
 
+  curve: document.getElementById("curve"),
+  optDup: document.getElementById("optDup"),
+  optArtist: document.getElementById("optArtist"),
+  optDur: document.getElementById("optDur"),
+
+
 };
 
 let playlistsCache = [];
@@ -232,6 +238,12 @@ async function mix() {
   try {
     const ids = [...selectedIds];
     if (!ids.length) return;
+    const mode = document.querySelector('input[name="mode"]:checked')?.value || "strict";
+    const curve = els.curve.value || "steady";
+    const removeDuplicates = !!els.optDup.checked;
+    const avoidSameArtist = !!els.optArtist.checked;
+    const preferSimilarDuration = !!els.optDur.checked;
+
 
     const name = (els.plName.value || "").trim() || "Roadtrip mix ✨";
 
@@ -245,6 +257,11 @@ async function mix() {
       body: JSON.stringify({
         playlistIds: ids,
         newPlaylistName: name,
+        mode,
+        curve,
+        removeDuplicates,
+        avoidSameArtist,
+        preferSimilarDuration,
       }),
     });
 

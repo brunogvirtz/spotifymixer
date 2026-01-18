@@ -102,6 +102,29 @@
 
           <div class="divider"></div>
 
+          <label class="small">Modo</label>
+          <div class="row">
+            <label class="pill"><input type="radio" name="mode" value="strict" checked> Strict</label>
+            <label class="pill"><input type="radio" name="mode" value="flex"> Flex</label>
+          </div>
+
+          <div style="height:10px"></div>
+
+          <label class="small">Curva</label>
+          <select id="curve" class="input">
+            <option value="steady" selected>Steady (parejo)</option>
+            <option value="build">Build (arranca chill → termina arriba)</option>
+            <option value="cooldown">Cooldown (arranca arriba → termina chill)</option>
+            <option value="wave">Wave (sube y baja)</option>
+          </select>
+
+          <div style="height:10px"></div>
+
+          <label class="pill"><input id="optDup" type="checkbox" checked> Quitar duplicados</label>
+          <label class="pill"><input id="optArtist" type="checkbox" checked> Evitar mismo artista seguido</label>
+          <label class="pill"><input id="optDur" type="checkbox" checked> Duración parecida</label>
+
+
           <button id="btnMix" class="btn btnPrimary" disabled>Crear mezclada</button>
 
           <div class="divider"></div>
