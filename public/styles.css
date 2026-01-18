@@ -511,7 +511,7 @@ a.link:hover{ border-bottom-color: rgba(29,185,84,.65); }
   padding: 10px 12px;
   border-radius: 14px;
   font-size: 14px;
-  font-style: none;
+  text-decoration: none;
 }
 
 /* --- Opciones de mix (modo / curva / flags) --- */
