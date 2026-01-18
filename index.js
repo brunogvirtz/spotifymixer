@@ -130,7 +130,19 @@ app.post("/api/mix", requireAuth, async (req,res)=>{
     });
   }
 
-  res.json({ok:true, url:pl.external_urls.spotify});
+  const plFinalRes = await fetch(`https://api.spotify.com/v1/playlists/${pl.id}`, {
+    headers: { "Authorization": "Bearer " + req.session.token }
+  });
+  const plFinal = await plFinalRes.json();
+
+  res.json({
+    ok: true,
+    id: plFinal.id,
+    url: plFinal.external_urls?.spotify,
+    name: plFinal.name,
+    tracksTotal: plFinal.tracks?.total ?? 0,
+    image: plFinal.images?.[0]?.url || ""
+  });
 });
 
 const port = process.env.PORT || 3000;

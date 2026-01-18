@@ -21,6 +21,9 @@ const els = {
   out: document.getElementById("out"),
 
   toast: document.getElementById("toast"),
+
+  result: document.getElementById("result"),
+
 };
 
 let playlistsCache = [];
@@ -190,6 +193,41 @@ async function loadPlaylists() {
   }
 }
 
+function renderResult(res, playlistCount) {
+  if (!res || !res.ok) return;
+
+  const imgHtml = res.image
+    ? `<img src="${res.image}" alt="Playlist cover">`
+    : `<div class="resultCoverFallback">♪</div>`;
+
+  els.result.innerHTML = `
+    <div class="resultCover">${imgHtml}</div>
+    <div class="resultMeta">
+      <div class="resultTitle">${escapeHtml(res.name || "Playlist creada")}</div>
+      <div class="resultSub">
+        <span class="tagBig">${res.tracksTotal ?? 0} canciones</span>
+        <span class="tagBig">Mezcla de ${playlistCount} playlists</span>
+      </div>
+    </div>
+    <div class="resultActions">
+      <a class="btn btnSpotify btnBig" href="${res.url}" target="_blank" rel="noopener noreferrer">
+        Ver playlist
+      </a>
+    </div>
+  `;
+  els.result.classList.remove("hidden");
+}
+
+function escapeHtml(s){
+  return String(s)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+
 async function mix() {
   try {
     const ids = [...selectedIds];
@@ -211,6 +249,7 @@ async function mix() {
     });
 
     els.out.textContent = JSON.stringify(res, null, 2);
+    renderResult(res, ids.length);
 
     if (res.url) {
       toast("Listo 🎉", "Playlist creada. Abrila desde la salida.");
@@ -235,6 +274,8 @@ els.btnLogout.addEventListener("click", async () => {
     playlistsCache = [];
     els.playlistList.innerHTML = "";
     els.out.textContent = "{}";
+    els.result.classList.add("hidden");
+    els.result.innerHTML = "";
     toast("Sesión cerrada", "Volvé a conectar cuando quieras.");
   } catch {}
   await checkAuth();

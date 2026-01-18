@@ -432,3 +432,82 @@ a.link{
   border-bottom: 1px dashed rgba(255,255,255,.35);
 }
 a.link:hover{ border-bottom-color: rgba(29,185,84,.65); }
+
+/* Resultado (más grande que los items de playlists) */
+.resultCard{
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.05);
+}
+
+.resultCover{
+  width: 88px;
+  height: 88px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.06);
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+}
+
+.resultCover img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.resultCoverFallback{
+  color: rgba(255,255,255,.75);
+  font-weight: 900;
+  font-size: 26px;
+}
+
+.resultMeta{
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.resultTitle{
+  font-weight: 900;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resultSub{
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tagBig{
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  color: rgba(255,255,255,.75);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.resultActions{
+  flex: 0 0 auto;
+}
+
+.btnBig{
+  padding: 10px 12px;
+  border-radius: 14px;
+  font-size: 14px;
+}
