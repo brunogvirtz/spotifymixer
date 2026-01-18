@@ -227,8 +227,8 @@ h1{
 
 /* Lista más compacta */
 .list{
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   margin-top: 10px;
 }
@@ -244,6 +244,7 @@ h1{
   background: rgba(255,255,255,.04);
   transition: transform .12s ease, border-color .12s ease, background .12s ease;
   cursor: pointer;
+  width: 100%;
 }
 
 .plItemCompact:hover{
