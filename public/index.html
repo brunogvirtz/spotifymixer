@@ -102,41 +102,36 @@
 
           <div class="divider"></div>
 
-          <div class="optionsCard">
-            <div class="optionsBlock">
-
-              <div>
-                <label class="small">Modo</label>
-                <div class="optionsRow">
-                  <label class="pill"><input type="radio" name="mode" value="strict" checked> Strict</label>
-                  <label class="pill"><input type="radio" name="mode" value="flex"> Flex</label>
-                </div>
-              </div>
-
-              <div class="optionsSpacer"></div>
-
-              <div>
-                <label class="small">Curva</label>
-                <div class="selectWrap">
-                  <select id="curve" class="input">
-                    <option value="steady">Steady (parejo)</option>
-                    <option value="build">Build (arranca chill → termina arriba)</option>
-                    <option value="cooldown">Cooldown (arranca arriba → termina chill)</option>
-                    <option value="wave">Wave (sube y baja)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="optionsSpacer"></div>
-
-              <div class="optionsRow">
-                <label class="pill"><input id="optDup" type="checkbox" checked> Quitar duplicados</label>
-                <label class="pill"><input id="optArtist" type="checkbox" checked> Evitar mismo artista</label>
-                <label class="pill"><input id="optDur" type="checkbox" checked> Duración parecida</label>
-              </div>
-
+          <div>
+            <label class="small">Modo</label>
+            <div class="optionsRow">
+              <label class="pill"><input type="radio" name="mode" value="strict" checked> Strict</label>
+              <label class="pill"><input type="radio" name="mode" value="flex"> Flex</label>
             </div>
           </div>
+          
+          <div class="divider"></div>
+
+          <div>
+            <label class="small">Curva</label>
+            <div class="selectWrap">
+              <select id="curve" class="input">
+                <option value="steady">Steady (parejo)</option>
+                <option value="build">Build (arranca chill → termina arriba)</option>
+                <option value="cooldown">Cooldown (arranca arriba → termina chill)</option>
+                <option value="wave">Wave (sube y baja)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="optionsRow">
+            <label class="pill"><input id="optDup" type="checkbox" checked> Quitar duplicados</label>
+            <label class="pill"><input id="optArtist" type="checkbox" checked> Evitar mismo artista</label>
+            <label class="pill"><input id="optDur" type="checkbox" checked> Duración parecida</label>
+          </div>
+
 
 
           <button id="btnMix" class="btn btnPrimary" disabled>Crear mezclada</button>
