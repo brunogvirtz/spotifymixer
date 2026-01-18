@@ -25,7 +25,6 @@ body{
   background:
     radial-gradient(1200px 600px at 20% 0%, rgba(29,185,84,.18), transparent 60%),
     radial-gradient(900px 500px at 85% 15%, rgba(255,255,255,.10), transparent 55%),
-    radial-gradient(800px 500px at 50% 100%, rgba(59,130,246,.14), transparent 55%),
     var(--bg);
   background-repeat: no-repeat;
   background-size: cover;
