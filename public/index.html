@@ -1,16 +1,124 @@
-
 <!doctype html>
-<html>
-<head><meta charset="utf-8"><title>Spotify Mixer</title></head>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Spotify Mixer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
 <body>
-<h1>Spotify Mixer</h1>
-<button onclick="location.href='/login'">Login Spotify</button>
-<button onclick="logout()">Logout</button>
-<button onclick="loadPlaylists()">Cargar Playlists</button>
-<div id="pls"></div>
-<input id="name" placeholder="Nombre nueva playlist">
-<button onclick="mix()">Crear mezclada</button>
-<pre id="out"></pre>
-<script src="app.js"></script>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Spotify Mixer</h1>
+          <div class="subtitle">Intercalá playlists para el viaje. Sin drama, con flow.</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <div id="userPill" class="pill hidden">👤 <span id="userName">—</span></div>
+        <button id="btnLogin" class="btn btnSpotify">Conectar con Spotify</button>
+        <button id="btnLogout" class="btn btnGhost hidden">Logout</button>
+      </div>
+    </header>
+
+    <!-- GATE: solo login -->
+    <div id="loginCard" class="card">
+      <div class="cardHeader">
+        <div>
+          <h2>Conectá tu cuenta</h2>
+          <p>Necesitamos permiso para leer tus playlists y crear una nueva.</p>
+        </div>
+        <div class="pill">🔒 OAuth</div>
+      </div>
+      <div class="cardBody">
+        <div class="row" style="justify-content:space-between; gap:12px;">
+          <div style="min-width:260px;">
+            <div class="small">Tip</div>
+            <div style="color:var(--muted); font-size:13px; margin-top:6px;">
+              Si es la primera vez, Spotify te va a pedir confirmar permisos.
+            </div>
+          </div>
+          <button class="btn btnSpotify" onclick="location.href='/login'">Conectar con Spotify</button>
+        </div>
+
+        <div class="footerNote">
+          Tu sesión queda guardada en el navegador. Si reiniciás el server, vas a tener que loguearte de nuevo.
+        </div>
+      </div>
+    </div>
+
+    <!-- APP -->
+    <div id="appGrid" class="grid hidden">
+      <section class="card">
+        <div class="cardHeader">
+          <div>
+            <h2>Playlists</h2>
+            <p>Elegí 2 o más. Después creamos una playlist nueva intercalada.</p>
+          </div>
+          <button id="btnLoad" class="btn">Cargar</button>
+        </div>
+
+        <div class="cardBody">
+          <div class="playlistsTop">
+            <input id="search" class="input" placeholder="Buscar playlist…" />
+            <div class="row">
+              <button id="btnAll" class="btn">Seleccionar todo</button>
+              <button id="btnNone" class="btn">Limpiar</button>
+            </div>
+          </div>
+
+          <div class="row" style="justify-content:space-between;">
+            <div class="small">Seleccionadas: <span id="selCount">0</span></div>
+            <div class="small">Total listadas: <span id="plCount">0</span></div>
+          </div>
+
+          <div id="playlistList" class="list"></div>
+
+          <div class="footerNote">
+            Consejo: cuanto más “distintas” sean las playlists, más divertido queda el mix.
+          </div>
+        </div>
+      </section>
+
+      <aside class="card">
+        <div class="cardHeader">
+          <div>
+            <h2>Crear playlist</h2>
+            <p>Elegí un nombre y generamos la nueva playlist en tu cuenta.</p>
+          </div>
+          <div class="pill">🎧</div>
+        </div>
+
+        <div class="cardBody">
+          <label class="small" for="plName">Nombre</label>
+          <input id="plName" class="input" placeholder="Roadtrip mix ✨" />
+
+          <div class="divider"></div>
+
+          <button id="btnMix" class="btn btnPrimary" disabled>Crear mezclada</button>
+
+          <div class="divider"></div>
+
+          <div class="small" style="margin-bottom:8px;">Salida</div>
+          <pre id="out" class="mono">{}</pre>
+
+          <div class="footerNote">
+            Si la playlist es muy grande, puede tardar un poco (Spotify agrega tracks en lotes).
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="app.js"></script>
 </body>
 </html>
