@@ -358,6 +358,7 @@ h1{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding-top: 8px;
 }
 .plSub{
   margin: 6px 0 0;
@@ -527,7 +528,7 @@ a.link:hover{ border-bottom-color: rgba(29,185,84,.65); }
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  padding-top: 4px;
+  padding-top: 8px;
 }
 
 /* Pills con inputs adentro */
@@ -545,7 +546,7 @@ a.link:hover{ border-bottom-color: rgba(29,185,84,.65); }
 .selectWrap{
   position: relative;
   width: 100%;
-  padding-top: 4px;
+  padding-top: 8px;
 }
 
 .selectWrap select{
